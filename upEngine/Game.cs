@@ -26,7 +26,7 @@ namespace upEngine
         public KeyboardState Keyboard{ get; set; }
         public Camera Player{ get; set; }
 
-        private int vertShader = 0;
+        private GLSLShader flatShader;
 
         public Game()
         {
@@ -47,22 +47,7 @@ namespace upEngine
         {
             Window.VSync = VSyncMode.On;
 
-            var vertSource = new StreamReader( @"C:\Users\Capsup\Documents\GitHub\upEngine\upEngine\content\shaders\old\flat\flat.vert" ).ReadToEnd();
-            var fragSource = new StreamReader( @"C:\Users\Capsup\Documents\GitHub\upEngine\upEngine\content\shaders\old\flat\flat.frag" ).ReadToEnd();
-
-            var vertShader = GL.CreateShader( ShaderType.VertexShader );
-            GL.ShaderSource( vertShader, vertSource );
-            GL.CompileShader( vertShader );
-
-            var fragShader = GL.CreateShader( ShaderType.FragmentShader );
-            GL.ShaderSource( fragShader, fragSource );
-            GL.CompileShader( fragShader );
-
-            var renderProgram = GL.CreateProgram();
-            GL.AttachShader( renderProgram, vertShader );
-            GL.AttachShader( renderProgram, fragShader );
-            GL.LinkProgram( renderProgram );
-            this.vertShader = renderProgram;
+            flatShader = new GLSLShader( "/old/flat/" );
         }
 
         private void Window_OnUpdate( object sender, FrameEventArgs e )
@@ -78,12 +63,9 @@ namespace upEngine
             GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
             
             var mvpMatrix = Player.ViewMatrix * Player.ProjectionMatrix;
-            unsafe
-            {
-                GL.ProgramUniformMatrix4( vertShader, GL.GetUniformLocation( vertShader, "mvpMatrix" ), 1, false, (float*) &mvpMatrix );
-            }
+            flatShader.SetUniform( "mvpMatrix", mvpMatrix );
 
-            GL.UseProgram( vertShader );
+            flatShader.Use();
 
             GL.Begin( PrimitiveType.Triangles );
                 /*GL.Vertex3( Vector4d.Transform( new Vector4d(0d, 0d, 0d, 1d), Player.ViewMatrix * Player.ProjectionMatrix ).Xyz );

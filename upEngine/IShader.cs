@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace upEngine
 {
@@ -29,8 +31,14 @@ namespace upEngine
             get;
         }
 
-        //ShaderError AttachSource( string source, ShaderType shaderType );
-        ShaderError CompileShader();
-        ShaderError LinkShader();
+        void AttachSource( string source, ShaderType shaderType );
+        void CompileShader();
+        void LinkShader();
+        void Use();
+        void SetUniform( string uniformName, Vector3 v3 );
+        void SetUniform( string uniformName, Vector4 v4 );
+        void SetUniform( string uniformName, Matrix4 m4 );
+        void SetUniform( string uniformName, int i );
+        void SetUniform( string uniformName, float f );
     }
 }
