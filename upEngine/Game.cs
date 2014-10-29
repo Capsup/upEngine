@@ -26,8 +26,6 @@ namespace upEngine
         public KeyboardState Keyboard{ get; set; }
         public Camera Player{ get; set; }
 
-        private GLSLShader flatShader;
-
         public Game()
         {
             Window.Load += Window_OnLoad;
@@ -47,7 +45,7 @@ namespace upEngine
         {
             Window.VSync = VSyncMode.On;
 
-            flatShader = new GLSLShader( "/old/flat/" );
+            ShaderManager.GetInstance().LoadShader( "/old/flat" );
         }
 
         private void Window_OnUpdate( object sender, FrameEventArgs e )
@@ -55,6 +53,7 @@ namespace upEngine
             InputHandling();
             Player.Update( this );
 
+            //Necessary to allow the OS to interrupt the CPU properly and allows the CPU to not idle at 100%
             Thread.Sleep( 1 );
         }
 
@@ -63,6 +62,7 @@ namespace upEngine
             GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
             
             var mvpMatrix = Player.ViewMatrix * Player.ProjectionMatrix;
+            IShader flatShader = ShaderManager.GetInstance().GetShader("flat");
             flatShader.SetUniform( "mvpMatrix", mvpMatrix );
 
             flatShader.Use();
